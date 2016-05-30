@@ -199,6 +199,9 @@ function makeSelectable(Component, sorter = (a, b) => a - b, nodevalue = (node) 
     }
 
     mouseDown(e) {
+      if (!this.props.selectable) {
+        return this.props.onMouseDown && this.props.onMouseDown(e)
+      }
       if (DEBUGGING.debug && DEBUGGING.clicks) {
         console.log('mousedown')
       }
@@ -245,7 +248,9 @@ function makeSelectable(Component, sorter = (a, b) => a - b, nodevalue = (node) 
     }
 
     click(e) {
-      if (!this.props.selectable) return
+      if (!this.props.selectable) {
+        return this.props.onClick && this.props.onClick(e)
+      }
       if (!this.mouseDownData) return
       this.handlers.stopmouseup()
       this.handlers.stopmousemove()
@@ -361,9 +366,13 @@ function makeSelectable(Component, sorter = (a, b) => a - b, nodevalue = (node) 
     }
 
     render() {
-      return <div onMouseDown={this.mouseDown} onClick={this.click}>
-        <Component ref={(ref) => { this.ref = ref }} {...this.props} {...this.state} />
-        </div>
+      return <Component
+        {...this.props}
+        {...this.state}
+        ref={(ref) => { this.ref = ref }}
+        onMouseDown={this.mouseDown}
+        onClick={this.click}
+      />
     }
   }
 }
