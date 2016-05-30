@@ -137,6 +137,21 @@ export default class TimeGrid extends Component {
       rangeEvents
     }
   }
+  
+  generateAllDayEventLevels(allDayEvents, range) {
+    const events = allDayEvents.slice(0)
+
+    events.sort((a, b) => sortEvents(a, b, this.props))
+
+    const { first, last } = endOfRange(range);
+    const segments = events.map(evt => eventSegments(evt, first, last, this.props))
+    const { levels } = eventLevels(segments)
+
+    while (levels.length < MIN_ROWS )
+      levels.push([])
+    
+    return { first, last, levels }
+  }
 
   renderEvents(range, events){
     let { min, max, endAccessor, startAccessor, components } = this.props;
@@ -178,17 +193,7 @@ export default class TimeGrid extends Component {
     })
   }
 
-  renderAllDayEvents(allDayEvents, range){
-    const events = allDayEvents.slice(0)
-
-    events.sort((a, b) => sortEvents(a, b, this.props))
-
-    const { first, last } = endOfRange(range);
-    const segments = events.map(evt => eventSegments(evt, first, last, this.props))
-    const { levels } = eventLevels(segments)
-
-    while (levels.length < MIN_ROWS )
-      levels.push([])
+  renderAllDayEvents(allDayEvents, first, last, levels, range){
 
     return levels.map((segs, idx) =>
       <EventRow
@@ -213,6 +218,7 @@ export default class TimeGrid extends Component {
 
     const range = dates.range(this.props.start, this.props.end, 'day')
     const { allDayEvents, rangeEvents } = this.separateEvents()
+    const { first, last, levels } = this.generateAllDayEventLevels(allDayEvents, range)
 
     return (
       <div className='rbc-time-view'>
@@ -226,7 +232,7 @@ export default class TimeGrid extends Component {
                         selectable={this.props.selectable}
                         gutterRef={addGutterRef(1)}
         >
-          { this.renderAllDayEvents(allDayEvents, range) }
+          { this.renderAllDayEvents(allDayEvents, first, last, levels, range) }
         </TimeGridAllDay>
         <div className="rbc-time-content" ref="content">
           <TimeGutter {...this.props} ref="gutter"/>
