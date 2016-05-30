@@ -10,11 +10,11 @@ import '../less/styles.less'
 momentLocalizer(moment); // or globalizeLocalizer
 
 const events = [{
-  title: 'test',
-  start: moment().add(1, 'days').subtract(5, 'hours').toDate(),
-  end: moment().add(1, 'days').subtract(4, 'hours').toDate(),
-  allDay: false
-},
+    title: 'test',
+    start: moment().add(1, 'days').subtract(5, 'hours').toDate(),
+    end: moment().add(1, 'days').subtract(4, 'hours').toDate(),
+    allDay: false
+  },
   {
     title: 'test all day',
     start: moment().toDate(),
@@ -25,7 +25,7 @@ const events = [{
 storiesOf('module.Calendar', module)
   .add('default view', () => {
     return (
-      <div style={{height: 900}}>
+      <div style={{height: 600}}>
         <Calendar
           min={moment('12:00am', 'h:mma').toDate()}
           max={moment('11:59pm', 'h:mma').toDate()}
@@ -38,7 +38,7 @@ storiesOf('module.Calendar', module)
 
   .add('selectable', () => {
     return (
-      <div style={{height: 900}}>
+      <div style={{height: 600}}>
         <Calendar
           selectable
           min={moment('12:00am', 'h:mma').toDate()}
