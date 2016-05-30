@@ -366,13 +366,16 @@ function makeSelectable(Component, sorter = (a, b) => a - b, nodevalue = (node) 
     }
 
     render() {
-      return <Component
-        {...this.props}
-        {...this.state}
-        ref={(ref) => { this.ref = ref }}
+      return <div
         onMouseDown={this.mouseDown}
         onClick={this.click}
-      />
+      >
+        <Component
+          {...this.props}
+          {...this.state}
+          ref={(ref) => { this.ref = ref }}
+        />
+      </div>
     }
   }
 }
