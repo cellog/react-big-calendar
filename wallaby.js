@@ -3,11 +3,11 @@ module.exports = function (wallaby) {
 
   return {
     files: [
-      { pattern: 'src/**/*.test.jsx', ignore: true },
-      'src/**/components/*.jsx'
+      { pattern: 'tests/*.js', ignore: true },
+      'utils/*.js'
     ],
     tests: [
-      'src/**/*.test.jsx'
+      'test/*.js'
     ],
     compilers: {
        '**/*.js*': wallaby.compilers.babel({
