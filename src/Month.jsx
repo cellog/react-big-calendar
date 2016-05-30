@@ -16,7 +16,7 @@ import EventRow from './EventRow';
 import EventEndingRow from './EventEndingRow';
 import Popup from './Popup';
 import Overlay from 'react-overlays/lib/Overlay';
-import BackgroundCells from './BackgroundCells';
+import SelectableBackgroundCells from './containers/SelectableBackgroundCells';
 
 import { dateFormat } from './utils/propTypes';
 import {
@@ -180,21 +180,23 @@ let MonthView = React.createClass({
   renderBackground(row, idx){
     let self = this;
 
-    function onSelectSlot({ start, end }) {
+    function onSelectSlot(values) {
       self._pendingSelection = self._pendingSelection
-        .concat(row.slice(start, end + 1))
+        .concat(values)
 
       clearTimeout(self._selectTimer)
       self._selectTimer = setTimeout(()=> self._selectDates())
     }
 
     return (
-    <BackgroundCells
+    <SelectableBackgroundCells
       container={() => findDOMNode(this)}
       selectable={this.props.selectable}
+      constantSelect
       slots={7}
       ref={r => this._bgRows[idx] = r}
-      onSelectSlot={onSelectSlot}
+      onFinishSelect={(...args) => onSelectSlot(args[2])}
+      getValueFromSlot={slot => row[slot]}
     />
     )
   },
