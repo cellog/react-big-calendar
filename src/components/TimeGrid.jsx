@@ -12,8 +12,7 @@ import TimeGutter from './TimeGutter.jsx'
 import DaySlot from './DaySlot.jsx'
 import TimeGridAllDay from './TimeGridAllDay.jsx'
 
-import EventRow from '../EventRow.jsx'
-import EventCell from '../EventCell.jsx'
+import EventRow from './EventRow.jsx'
 
 import { accessor as get } from '../utils/accessors';
 import dates from '../utils/dates';
@@ -55,7 +54,9 @@ export default class TimeGrid extends Component {
     allDayAccessor: accessor,
     titleAccessor: accessor,
     startAccessor: accessor,
-    endAccessor: accessor
+    endAccessor: accessor,
+    
+    onSelectEvent: PropTypes.func
   }
 
   static defaultProps = {
@@ -70,7 +71,8 @@ export default class TimeGrid extends Component {
     allDayAccessor: 'allDay',
     startAccessor: 'start',
     endAccessor: 'end',
-    titleAccessor: 'title'
+    titleAccessor: 'title',
+    onSelectEvent: () => null
   }
 
   _adjustGutter() {
@@ -187,6 +189,7 @@ export default class TimeGrid extends Component {
           style={segStyle(1, range.length)}
           key={idx}
           date={date}
+          onSelectEvent={this.props.onSelectEvent}
           events={daysEvents}
         />
       )
@@ -194,7 +197,6 @@ export default class TimeGrid extends Component {
   }
 
   renderAllDayEvents(allDayEvents, first, last, levels, range){
-
     return levels.map((segs, idx) =>
       <EventRow
         eventComponent={this.props.components.event}
@@ -203,7 +205,7 @@ export default class TimeGrid extends Component {
         endAccessor={this.props.endAccessor}
         allDayAccessor={this.props.allDayAccessor}
         eventPropGetter={this.props.eventPropGetter}
-        onSelect={() => null}
+        onSelect={this.props.onSelectEvent}
         slots={range.length}
         key={idx}
         segments={segs}
@@ -231,6 +233,8 @@ export default class TimeGrid extends Component {
           <TimeGridAllDay range={range}
                           selectable={this.props.selectable}
                           gutterRef={addGutterRef(1)}
+                          levels={levels}
+                          onSelectSlot={this.props.onSelectSlot}
           >
             { this.renderAllDayEvents(allDayEvents, first, last, levels, range) }
           </TimeGridAllDay>

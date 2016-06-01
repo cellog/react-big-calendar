@@ -51,6 +51,7 @@ export function eventLevels(rowSegments, limit = Infinity){
     }
   })
 
+  levels.forEach((level, i) => level.forEach(event => event.level = i))
   levels.map(level => level.sort((a, b) => a.left - b.left))
 
   return { levels, extra };

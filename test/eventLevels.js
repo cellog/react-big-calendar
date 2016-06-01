@@ -75,16 +75,19 @@ describe('utils/eventLevels - eventLevels', () => {
     expect(levels.levels[0][0].span, 'first span').to.equal(1)
     expect(levels.levels[0][0].left, 'first left').to.equal(1)
     expect(levels.levels[0][0].right, 'first right').to.equal(1)
+    expect(levels.levels[0][0].level, 'first level').to.equal(0)
 
     expect(levels.levels[0][1].event, 'second event').to.equal(events[1])
     expect(levels.levels[0][1].span, 'second span').to.equal(1)
     expect(levels.levels[0][1].left, 'second left').to.equal(2)
     expect(levels.levels[0][1].right, 'second right').to.equal(2)
+    expect(levels.levels[0][1].level, 'second level').to.equal(0)
 
     expect(levels.levels[0][2].event, 'third event').to.equal(events[2])
     expect(levels.levels[0][2].span, 'third span').to.equal(1)
     expect(levels.levels[0][2].left, 'third left').to.equal(3)
     expect(levels.levels[0][2].right, 'third right').to.equal(3)
+    expect(levels.levels[0][2].level, 'third level').to.equal(0)
   })
 
   it('should overlap on complex', () => {
@@ -99,30 +102,36 @@ describe('utils/eventLevels - eventLevels', () => {
     expect(levels.levels[0][0].span, 'level 1: first span').to.equal(2)
     expect(levels.levels[0][0].left, 'level 1: first left').to.equal(1)
     expect(levels.levels[0][0].right, 'level 1: first right').to.equal(2)
+    expect(levels.levels[0][0].level, 'level 1: first level').to.equal(0)
 
     expect(levels.levels[0][1].event, 'level 1: second event').to.equal(complexevents[5])
     expect(levels.levels[0][1].span, 'level 1: second span').to.equal(1)
     expect(levels.levels[0][1].left, 'level 1: second left').to.equal(3)
     expect(levels.levels[0][1].right, 'level 1: second right').to.equal(3)
+    expect(levels.levels[0][1].level, 'level 1: second level').to.equal(0)
 
     expect(levels.levels[1][0].event, 'level 2: first event').to.equal(complexevents[1])
     expect(levels.levels[1][0].span, 'level 2: first span').to.equal(1)
     expect(levels.levels[1][0].left, 'level 2: first left').to.equal(1)
     expect(levels.levels[1][0].right, 'level 2: first right').to.equal(1)
+    expect(levels.levels[1][0].level, 'level 2: first level').to.equal(1)
 
     expect(levels.levels[1][1].event, 'level 2: second event').to.equal(complexevents[2])
     expect(levels.levels[1][1].span, 'level 2: second span').to.equal(1)
     expect(levels.levels[1][1].left, 'level 2: second left').to.equal(2)
     expect(levels.levels[1][1].right, 'level 2: second right').to.equal(2)
+    expect(levels.levels[1][1].level, 'level 2: second level').to.equal(1)
 
     expect(levels.levels[2][0].event, 'level 3: first event').to.equal(complexevents[3])
     expect(levels.levels[2][0].span, 'level 3: first span').to.equal(1)
     expect(levels.levels[2][0].left, 'level 3: first left').to.equal(2)
     expect(levels.levels[2][0].right, 'level 3: first right').to.equal(2)
+    expect(levels.levels[2][0].level, 'level 3: first level').to.equal(2)
 
     expect(levels.levels[3][0].event, 'level 4: first event').to.equal(complexevents[4])
     expect(levels.levels[3][0].span, 'level 4: first span').to.equal(1)
     expect(levels.levels[3][0].left, 'level 4: first left').to.equal(2)
     expect(levels.levels[3][0].right, 'level 4: first right').to.equal(2)
+    expect(levels.levels[3][0].level, 'level 4: first level').to.equal(3)
   })
 })

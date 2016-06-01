@@ -9,7 +9,8 @@ export default class TimeGridAllDay extends Component {
     gutterWidth: PropTypes.number,
     range: PropTypes.array,
     selectable: PropTypes.bool,
-    gutterRef: PropTypes.func
+    gutterRef: PropTypes.func,
+    levels: PropTypes.array
   }
   static defaultProps = {
     range: [],
@@ -26,12 +27,17 @@ export default class TimeGridAllDay extends Component {
         <div className="rbc-allday-cell">
           <SelectableBackgroundCells selectable={this.props.selectable}
                                      constantSelect
+                                     isAllDay
                                      slots={this.props.range.length}
+                                     levels={this.props.levels.length + 1}
                                      getValueFromSlot={(slot) => this.props.range[slot]}
-          />
-          <div style={{ zIndex: 1, position: 'relative' }}>
+                                     onFinishSelect={(a,b,values) => this.props.onSelectSlot({
+                                      start: values[0],
+                                      slots: values,
+                                      end: values[values.length - 1]})}
+          >
             {this.props.children}
-          </div>
+          </SelectableBackgroundCells>
         </div>
       </div>
     )
