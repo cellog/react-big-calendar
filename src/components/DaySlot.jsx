@@ -34,9 +34,9 @@ export default class DaySlot extends Component {
 
   static defaultProps = {
     events: [],
-    eventComponent: EventRow,
     startAccessor: 'start',
     endAccessor: 'end',
+    titleAccessor: 'title',
     allDayAccessor: 'allDay',
     onSelectSlot: () => null,
     onSelectEvent: () => null

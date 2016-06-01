@@ -6,6 +6,7 @@ export default class BackgroundCell extends Component {
     index: PropTypes.number.isRequired,
     slots: PropTypes.number.isRequired,
     value: PropTypes.instanceOf(Date),
+    height: PropTypes.number,
     selected: PropTypes.bool
   }
   static defaultProps = {
@@ -14,9 +15,13 @@ export default class BackgroundCell extends Component {
   
   render() {
     const selstyle = this.props.selected ? 'rbc-day-bg rbc-selected-cell' : 'rbc-day-bg'
+    const segmentStyle = segStyle(1, this.props.slots)
+    if (this.props.height) {
+      segmentStyle.height = this.props.height
+    }
     return (
       <div key={`bg_${this.props.index}`}
-           style={segStyle(1, this.props.slots)}
+           style={segmentStyle}
            className={selstyle}
       />
     )

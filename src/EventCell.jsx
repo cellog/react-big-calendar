@@ -32,7 +32,8 @@ let EventCell = React.createClass({
           'rbc-event-continues-prior': continuesPrior,
           'rbc-event-continues-after': continuesAfter
         })}
-        onClick={()=> onSelect(event)}
+        onMouseDown={e => e.stopPropagation() && e.preventDefault()}
+        onClick={() => onSelect(event)}
       >
         <div className='rbc-event-content' title={title}>
           { Component

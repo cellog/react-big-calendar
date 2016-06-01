@@ -10,6 +10,7 @@ module.exports = function (config) {
     basePath: '',
 
     frameworks: [
+      'mocha-debug',
       'mocha',
       'sinon-chai'
     ],
