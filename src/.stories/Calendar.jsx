@@ -4,6 +4,7 @@ import Calendar from '../Calendar.jsx';
 import moment from 'moment';
 import momentLocalizer from '../localizers/moment.js'
 import '../less/styles.less'
+import { debug } from '../containers/Selection.jsx'
 
 // Setup the localizer by providing the moment (or globalize) Object
 // to the correct localizer.
@@ -38,6 +39,7 @@ storiesOf('module.Calendar', module)
   })
 
   .add('selectable', () => {
+    //debug({ registration: true })
     return (
       <div style={{height: 600}}>
         <Calendar

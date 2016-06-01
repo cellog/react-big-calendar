@@ -12,11 +12,12 @@ import getHeight from 'dom-helpers/query/height';
 import getPosition from 'dom-helpers/query/position';
 import raf from 'dom-helpers/util/requestAnimationFrame';
 
-import EventRow from './EventRow';
+import EventRow from './components/EventRow';
 import EventEndingRow from './EventEndingRow';
 import Popup from './Popup';
 import Overlay from 'react-overlays/lib/Overlay';
-import SelectableBackgroundCells from './containers/SelectableBackgroundCells';
+import BackgroundCells from './components/BackgroundCells.jsx';
+import SelectableMonthView from './containers/SelectableMonthView.jsx'
 
 import { dateFormat } from './utils/propTypes';
 import {
@@ -107,7 +108,7 @@ let MonthView = React.createClass({
   },
 
   render() {
-    var { date, culture, weekdayFormat } = this.props
+    var { date, culture, weekdayFormat, onSelectSlot } = this.props
       , month = dates.visibleDays(date, culture)
       , weeks  = chunk(month, 7);
 
@@ -116,10 +117,13 @@ let MonthView = React.createClass({
     this._weekCount = weeks.length;
 
     var elementProps = omit(this.props, Object.keys(propTypes));
-
+    
     return (
-      <div
+      <SelectableMonthView
         {...elementProps}
+        selectable={this.props.selectable}
+        constantSelect
+        onFinishSelect={(...args) => onSelectSlot(args[2])}
         className={cn('rbc-month-view', elementProps.className)}
       >
         <div className='rbc-row rbc-month-header'>
@@ -128,7 +132,7 @@ let MonthView = React.createClass({
         { weeks.map((week, idx) =>
             this.renderWeek(week, idx, measure && this._renderMeasureRows))
         }
-      </div>
+      </SelectableMonthView>
     )
   },
 
@@ -189,13 +193,10 @@ let MonthView = React.createClass({
     }
 
     return (
-    <SelectableBackgroundCells
+    <BackgroundCells
       container={() => findDOMNode(this)}
-      selectable={this.props.selectable}
-      constantSelect
       slots={7}
       ref={r => this._bgRows[idx] = r}
-      onFinishSelect={(...args) => onSelectSlot(args[2])}
       getValueFromSlot={slot => row[slot]}
     />
     )
@@ -211,6 +212,7 @@ let MonthView = React.createClass({
         onSelect={this._selectEvent}
         key={idx}
         segments={segments}
+        slots={7}
         start={first}
         end={last}
       />

@@ -10,13 +10,13 @@ let DEBUGGING = {
   bounds: false,
   clicks: false,
   selection: false,
-  registration: false
+  registration: false,
+  collisions: false,
 }
 
-function debug({ bounds = false, clicks = false, selection = false, registration = false }) {
-  if (bounds || clicks || selection) {
-    const props = { bounds, clicks, selection }
-    DEBUGGING.debug = true
+function debug({ bounds = false, clicks = false, selection = false, registration = false, collisions = false }) {
+  if (bounds || clicks || selection || registration || collisions) {
+    const props = { bounds, clicks, selection, registration, collisions }
     DEBUGGING = {
       debug: true,
       ...props
@@ -26,7 +26,8 @@ function debug({ bounds = false, clicks = false, selection = false, registration
   }
 }
 
-function makeSelectable(Component, sorter = (a, b) => a - b, nodevalue = (node) => node.props.value) {
+function makeSelectable( Component, options = {}) {
+  const { containerDiv = true, sorter = (a, b) => a - b, nodevalue = (node) => node.props.value } = options
   if (!Component) throw new Error("Component is undefined")
   const displayName = Component.displayName || Component.name || 'Component'
 
@@ -46,6 +47,7 @@ function makeSelectable(Component, sorter = (a, b) => a - b, nodevalue = (node) 
       }
       this.selectables = {}
       this.selectableKeys = []
+      this.containerDiv = containerDiv
       this.state = {
         selecting: false,
         selectedNodes: {},
@@ -60,6 +62,7 @@ function makeSelectable(Component, sorter = (a, b) => a - b, nodevalue = (node) 
       constantSelect: PropTypes.bool,
       selectable: PropTypes.bool,
       preserveSelection: PropTypes.bool,
+      selectIntermediates: PropTypes.bool,
       onSelectSlot: PropTypes.func,
       onFinishSelect: PropTypes.func
     }
@@ -168,10 +171,22 @@ function makeSelectable(Component, sorter = (a, b) => a - b, nodevalue = (node) 
       } = getBoundsForNode(nodeB);
       if (DEBUGGING.debug && DEBUGGING.bounds) {
         console.log(`collide ${key}: `, getBoundsForNode(nodeA), getBoundsForNode(nodeB))
-        console.log('a bottom < b top', ((aBottom - tolerance ) < bTop))
-        console.log('a top > b bottom', (aTop + tolerance) > (bBottom))
-        console.log('a right < b left', ((aBottom - tolerance ) < bTop))
-        console.log('a left > b right', (aLeft + tolerance) > (bRight))
+        if (DEBUGGING.collisions) {
+          console.log('a bottom < b top', ((aBottom - tolerance ) < bTop))
+          console.log('a top > b bottom', (aTop + tolerance) > (bBottom))
+          console.log('a right < b left', ((aBottom - tolerance ) < bTop))
+          console.log('a left > b right', (aLeft + tolerance) > (bRight))
+        }
+        console.log(!(
+          // 'a' bottom doesn't touch 'b' top
+          ((aBottom - tolerance ) < bTop)  ||
+          // 'a' top doesn't touch 'b' bottom
+          ((aTop + tolerance) > (bBottom)) ||
+          // 'a' right doesn't touch 'b' left
+          ((aRight - tolerance) < bLeft )  ||
+          // 'a' left doesn't touch 'b' right
+          ((aLeft + tolerance) > (bRight) )
+        ) ? `${key} COLLIDES` : `${key} does not collide`)
       }
 
       return !(
@@ -366,16 +381,25 @@ function makeSelectable(Component, sorter = (a, b) => a - b, nodevalue = (node) 
     }
 
     render() {
-      return <div
+      if (this.containerDiv) {
+        return <div
+          onMouseDown={this.mouseDown}
+          onClick={this.click}
+        >
+          <Component
+            {...this.props}
+            {...this.state}
+            ref={(ref) => { this.ref = ref }}
+          />
+        </div>
+      }
+      return <Component
+        {...this.props}
+        {...this.state}
         onMouseDown={this.mouseDown}
         onClick={this.click}
-      >
-        <Component
-          {...this.props}
-          {...this.state}
-          ref={(ref) => { this.ref = ref }}
-        />
-      </div>
+        ref={(ref) => { this.ref = ref }}
+      />
     }
   }
 }
