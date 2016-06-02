@@ -123,6 +123,7 @@ let MonthView = React.createClass({
         {...elementProps}
         selectable={this.props.selectable}
         constantSelect
+        selectIntermediates
         onFinishSelect={(...args) => onSelectSlot(args[2])}
         className={cn('rbc-month-view', elementProps.className)}
       >

@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf, action, linkTo } from '@kadira/storybook';
 import Selectable from '../../containers/Selectable.jsx'
-import Selection from '../../containers/Selection.jsx'
+import Selection, { debug } from '../../containers/Selection.jsx'
 
 class Thing extends React.Component {
   static propTypes = {
@@ -31,7 +31,7 @@ const SelectableThing = Selectable(Thing, {
 
 class Test extends React.Component {
   render() {
-    return <div style={{width: 100, height: 200, padding: 30, backgroundColor: '#ff8888'}}>{this.props.children}</div>
+    return <div style={{width: 100, height: 200, padding: 30, backgroundColor: '#ff8888', ...this.props.style}}>{this.props.children}</div>
   }
 }
 
@@ -91,4 +91,16 @@ storiesOf('module.Selectable', module)
     )
   })
 
+  .add('selectable, constant select, intermediate', () => {
+    const generateThing = (...i) => <SelectableThing thing={`hi${i[1]}`} index={i[1]} />
+    const things = Array(20).fill(0).map(generateThing)
+    //debug({ selection: true })
+
+    const Sel = Selection(Test, (a, b) => Number(a) - Number(b))
+    return (
+      <Sel selectable constantSelect selectIntermediates style={{display: 'flex', flexFlow: 'row wrap', width: '50%'}}>
+        {things}
+      </Sel>
+    )
+  })
 

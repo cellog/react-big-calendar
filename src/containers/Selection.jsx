@@ -47,6 +47,7 @@ function makeSelectable( Component, options = {}) {
       }
       this.selectables = {}
       this.selectableKeys = []
+      this.sortedNodes = []
       this.containerDiv = containerDiv
       this.state = {
         selecting: false,
@@ -71,7 +72,8 @@ function makeSelectable( Component, options = {}) {
       clickTolerance: 5,
       constantSelect: false,
       selectable: false,
-      preserveSelection: false
+      preserveSelection: false,
+      selectIntermediates: false
     }
 
     static childContextTypes = {
@@ -107,7 +109,7 @@ function makeSelectable( Component, options = {}) {
       if (!this.props.onFinishSelect) return
       const newnodes = this.state.selectedNodes
       const newvalues = this.state.selectedValues
-      const nodelist = Object.keys(newnodes).map((key) => newnodes[key]).sort((a, b) => nodevalue(a.node) - nodevalue(b.node))
+      const nodelist = Object.keys(newnodes).map((key) => newnodes[key]).sort((a, b) => sorter(nodevalue(a.node), nodevalue(b.node)))
       const valuelist = Object.keys(newvalues).map((key) => newvalues[key]).sort(sorter)
       if (DEBUGGING.debug && DEBUGGING.selection) {
         console.log('finishselect', newvalues, newnodes, valuelist, nodelist, this.bounds)
@@ -120,6 +122,7 @@ function makeSelectable( Component, options = {}) {
         registerSelectable: (component, key, value, callback) => {
           if (!this.selectables.hasOwnProperty(key)) {
             this.selectableKeys.push(key)
+            this.sortedNodes.push({ component, key, value, callback } )
           }
           if (DEBUGGING.debug && DEBUGGING.registration) {
             console.log(`registered: ${key}`, value)
@@ -346,10 +349,20 @@ function makeSelectable( Component, options = {}) {
       let nodes = {...this.state.selectedNodes}
       let values = {...this.state.selectedValues}
       const changedNodes = []
+      const selectedIndices = []
+      const saveNode = (node, bounds) => {
+        if (nodes[node.key] !== undefined) return
+        if (DEBUGGING.debug && DEBUGGING.selection) {
+          console.log(`select: ${node.key}`)
+        }
+        nodes[node.key] = {node: node.component, bounds: bounds}
+        values[node.key] = node.value
+        changedNodes.push([true, node])
+      }
 
-      this.selectableKeys.forEach((key) => {
-        const node = this.selectables[key]
+      this.sortedNodes.forEach((node, idx) => {
         const domnode = findDOMNode(node.component)
+        const key = node.key
         const bounds = getBoundsForNode(domnode)
         if (DEBUGGING.debug && DEBUGGING.bounds) {
           console.log(`node ${key} bounds`, bounds)
@@ -364,14 +377,17 @@ function makeSelectable( Component, options = {}) {
           changedNodes.push([false, node])
           return
         }
-        if (nodes[key] !== undefined) return
-        if (DEBUGGING.debug && DEBUGGING.selection) {
-          console.log(`select: ${key}`)
-        }
-        nodes[key] = {node: node.component, bounds: bounds}
-        values[key] = node.value
-        changedNodes.push([true, node])
+        selectedIndices.push(idx)
+        saveNode(node, bounds)
       })
+      if (this.props.selectIntermediates) {
+        const min = Math.min(...selectedIndices)
+        const max = Math.max(...selectedIndices)
+        const filled = Array.apply(min, Array(max-min)).map((x, y) => min + y + 1)
+        filled.unshift(min)
+        const diff = filled.filter(val => selectedIndices.indexOf(val) === -1)
+        diff.forEach(idx => saveNode(this.sortedNodes[idx], getBoundsForNode(findDOMNode(this.sortedNodes[idx].component))))
+      }
       if (changedNodes.length) {
         changedNodes.forEach((item) => {
           item[1].callback(item[0], nodes, values)
