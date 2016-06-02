@@ -11,13 +11,14 @@ export default class BackgroundCells extends Component {
 
   static defaultProps = {
     getValueFromSlot: (i) => i,
+    levels: 0,
     isAllDay: false
   }
   
   render() {
     const slots = []
     const className = this.props.isAllDay ? 'rbc-allday-bg' : 'rbc-row-bg'
-    const height = this.props.levels * 20
+    const height = this.props.levels ? this.props.levels * 20 : null
     for (let i = 0; i < this.props.slots; i++) {
       slots.push((
         <SelectableBackgroundCell
