@@ -34,28 +34,25 @@ export function segStyle(span, slots){
 }
 
 export function eventLevels(rowSegments, limit = Infinity){
-  let i, j, seg
-    , levels = []
-    , extra = [];
+  const levels = []
+  const extra = [];
 
-  for (i = 0; i < rowSegments.length; i++) {
-    seg = rowSegments[i];
+  rowSegments.forEach(seg => {
+    const search = levels
+      .map(level => !segsOverlap(seg, level))
+      .findIndex(overlap => overlap)
 
-    for (j = 0; j < levels.length; j++)
-      if (!segsOverlap(seg, levels[j]))
-        break
+    const overlapindex = search < 0 ? levels.length : search
 
-    if (j >= limit) {
+    if (overlapindex > limit) {
       extra.push(seg)
+    } else {
+      (levels[overlapindex] || (levels[overlapindex] = [])).push(seg)
     }
-    else {
-      (levels[j] || (levels[j] = [])).push(seg);
-    }
-  }
+  })
 
-  for (i = 0; i < levels.length; i++) {
-    levels[i].sort((a, b) => a.left - b.left); //eslint-disable-line
-  }
+  levels.forEach((level, i) => level.forEach(event => event.level = i))
+  levels.map(level => level.sort((a, b) => a.left - b.left))
 
   return { levels, extra };
 }

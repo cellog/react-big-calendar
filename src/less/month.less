@@ -99,10 +99,16 @@
 
 .rbc-row-bg {
   &:extend(.rbc-abs-full);
+  position: absolute;
   display: flex;
   flex-direction: row;
   flex: 1 0 0;
   overflow: hidden;
+}
+
+.rbc-allday-bg {
+  &:extend(.rbc-row-bg);
+  position: relative;
 }
 
 .rbc-day-bg {

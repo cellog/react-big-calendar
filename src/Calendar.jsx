@@ -288,13 +288,12 @@ let Calendar = React.createClass({
       agenda: PropTypes.shape({
         date: elementType,
         time: elementType,
-        event: elementType,
-        component: PropTypes.element
+        event: elementType
       }),
 
-      day: PropTypes.shape({ event: elementType, component: PropTypes.element }),
-      week: PropTypes.shape({ event: elementType, component: PropTypes.element }),
-      month: PropTypes.shape({ event: elementType, component: PropTypes.element })
+      day: PropTypes.shape({ event: elementType }),
+      week: PropTypes.shape({ event: elementType }),
+      month: PropTypes.shape({ event: elementType })
     }),
 
     /**
@@ -378,6 +377,7 @@ let Calendar = React.createClass({
     )
 
     let ToolbarToRender = components.toolbar || Toolbar
+    const now = new Date()
 
     return (
       <div {...elementProps}
@@ -411,6 +411,7 @@ let Calendar = React.createClass({
           onSelectEvent={this._select}
           onSelectSlot={this._selectSlot}
           onShowMore={this._showMore}
+          now={props.now ? props.now : now }
         />
       </div>
     );
