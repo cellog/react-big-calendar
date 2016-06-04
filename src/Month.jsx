@@ -73,7 +73,6 @@ let MonthView = React.createClass({
 
   componentWillMount() {
     this._bgRows = []
-    this._pendingSelection = []
   },
 
   componentWillReceiveProps({ date }) {
@@ -183,15 +182,6 @@ let MonthView = React.createClass({
   },
 
   renderBackground(row, idx){
-    let self = this;
-
-    function onSelectSlot(values) {
-      self._pendingSelection = self._pendingSelection
-        .concat(values)
-
-      clearTimeout(self._selectTimer)
-      self._selectTimer = setTimeout(()=> self._selectDates())
-    }
 
     return (
     <BackgroundCells
@@ -329,29 +319,12 @@ let MonthView = React.createClass({
 
   _dateClick(date, e){
     e.preventDefault();
-    this.clearSelection()
     notify(this.props.onNavigate, [navigate.DATE, date])
   },
 
   _selectEvent(...args){
-    //cancel any pending selections so only the event click goes through.
-    this.clearSelection()
 
     notify(this.props.onSelectEvent, args)
-  },
-
-  _selectDates(){
-    let slots = this._pendingSelection.slice()
-
-    this._pendingSelection = []
-
-    slots.sort((a, b) => +a - +b)
-
-    notify(this.props.onSelectSlot, {
-      slots,
-      start: slots[0],
-      end: slots[slots.length - 1]
-    })
   },
 
   _showMore(segments, date, weekIdx, slot){
@@ -360,9 +333,6 @@ let MonthView = React.createClass({
     let events = segments
       .filter(seg => isSegmentInSlot(seg, slot))
       .map(seg => seg.event)
-
-    //cancel any pending selections so only the event click goes through.
-    this.clearSelection()
 
     if (this.props.popup) {
       let position = getPosition(cell, findDOMNode(this));
@@ -377,12 +347,6 @@ let MonthView = React.createClass({
 
     notify(this.props.onShowMore, [events, date, slot])
   },
-
-  clearSelection(){
-    clearTimeout(this._selectTimer)
-    this._pendingSelection = [];
-  }
-
 });
 
 MonthView.navigate = (date, action)=>{
