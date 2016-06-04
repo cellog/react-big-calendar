@@ -36,19 +36,7 @@ export default class TimeGrid extends Component {
     dayFormat: PropTypes.string.isRequired,
     culture: PropTypes.string.isRequired,
     components: PropTypes.shape({
-      event: elementType,
-
-      toolbar: PropTypes.element,
-
-      agenda: PropTypes.shape({
-        date: elementType,
-        time: elementType,
-        event: elementType
-      }),
-
-      day: PropTypes.shape({ event: elementType }),
-      week: PropTypes.shape({ event: elementType }),
-      month: PropTypes.shape({ event: elementType })
+      event: elementType
     }),
 
     allDayAccessor: accessor,
@@ -73,6 +61,11 @@ export default class TimeGrid extends Component {
     endAccessor: 'end',
     titleAccessor: 'title',
     onSelectEvent: () => null
+  }
+
+  constructor(props) {
+    super(props)
+    this.selectionFormatter = this.selectionFormatter.bind(this)
   }
 
   _adjustGutter() {
@@ -155,6 +148,19 @@ export default class TimeGrid extends Component {
     return { first, last, levels }
   }
 
+  selectionFormatter({start, end}) {
+    if (start+'' === end+'') {
+      return localizer.format(
+        {start, end: dates.add(end, this.props.step, 'minutes')},
+      this.props.selectRangeFormat, this.props.culture)
+    }
+    return localizer.format(
+      {start, end},
+      this.props.selectRangeFormat,
+      this.props.culture
+    )
+  }
+
   renderEvents(range, events){
     let { min, max, endAccessor, startAccessor, components } = this.props;
     let today = new Date(), daysEvents=[]
@@ -171,20 +177,9 @@ export default class TimeGrid extends Component {
           {...this.props }
           min={dates.merge(date, min)}
           max={dates.merge(date, max)}
-          now={new Date()}
+          now={today}
           eventTimeRangeFormat={this.props.eventTimeRangeFormat}
-          formatter={({start, end}) => {
-            if (start+'' === end+'') {
-              return localizer.format(
-                {start, end: dates.add(end, this.props.step, 'minutes')},
-                this.props.selectRangeFormat,
-                this.props.culture)
-            }
-            return localizer.format(
-              {start, end},
-              this.props.selectRangeFormat,
-              this.props.culture)
-          }}
+          formatter={this.selectionFormatter}
           className={cn({ 'rbc-now': dates.eq(date, today, 'day') })}
           style={segStyle(1, range.length)}
           key={idx}
@@ -225,16 +220,18 @@ export default class TimeGrid extends Component {
     return (
       <div className='rbc-time-view'>
         <div className="rbc-time-header" ref={ref => this._headerCell = ref}>
-          <TimeGridHeader range={range}
-                          gutterRef={addGutterRef(0)}
-                          format={this.props.dayFormat}
-                          culture={this.props.culture}
+          <TimeGridHeader
+            range={range}
+            gutterRef={addGutterRef(0)}
+            format={this.props.dayFormat}
+            culture={this.props.culture}
           />
-          <TimeGridAllDay range={range}
-                          selectable={this.props.selectable}
-                          gutterRef={addGutterRef(1)}
-                          levels={levels}
-                          onSelectSlot={this.props.onSelectSlot}
+          <TimeGridAllDay
+            range={range}
+            selectable={this.props.selectable}
+            gutterRef={addGutterRef(1)}
+            levels={levels}
+            onSelectSlot={this.props.onSelectSlot}
           >
             { this.renderAllDayEvents(allDayEvents, first, last, levels, range) }
           </TimeGridAllDay>
