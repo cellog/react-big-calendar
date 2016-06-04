@@ -19,6 +19,8 @@ import Toolbar from './Toolbar';
 
 import omit from 'lodash/object/omit';
 import defaults from 'lodash/object/defaults';
+import transform from 'lodash/object/transform';
+import mapValues from 'lodash/object/mapValues';
 
 function viewNames(_views){
   return !Array.isArray(_views) ? Object.keys(_views) : _views
@@ -326,6 +328,32 @@ let Calendar = React.createClass({
     };
   },
 
+  getViews() {
+    const views = this.props.views;
+
+    if (Array.isArray(views)) {
+      return transform(views, (obj, name) => obj[name] = VIEWS[name], {});
+    }
+
+    if (typeof views === 'object') {
+      return mapValues(views, (value, key) => {
+        if (value === true) {
+          return VIEWS[key];
+        }
+
+        return value;
+      });
+    }
+
+    return VIEWS;
+  },
+
+  getView() {
+    const views = this.getViews();
+
+    return views[this.props.view];
+  },
+
   render() {
     let {
         view, toolbar, events
@@ -339,8 +367,7 @@ let Calendar = React.createClass({
 
     formats = defaultFormats(formats)
 
-    const viewComponent = (components && components[view] && components[view].component) || VIEWS[view];
-    let View = viewComponent;
+    let View = this.getView();
     let names = viewNames(this.props.views)
 
     let elementProps = omit(this.props, Object.keys(Calendar.propTypes))
