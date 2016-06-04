@@ -3,7 +3,6 @@ import { findDOMNode } from 'react-dom'
 import cn from 'classnames';
 
 import SelectableTimeGutter from '../containers/SelectableTimeGutter.jsx'
-import EventRow from '../EventRow.jsx'
 
 import dates from '../utils/dates';
 import { isSelected } from '../utils/selection';
